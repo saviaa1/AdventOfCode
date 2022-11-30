@@ -1,0 +1,108 @@
+#!/usr/bin/env python
+import aocd as ao
+import numpy as np
+from collections import Counter, defaultdict, deque
+from queue import PriorityQueue
+import sys
+import copy
+
+from numpy.lib.nanfunctions import nancumsum
+
+class Graph:
+    def __init__(self, num_of_vertices):
+        self.v = num_of_vertices
+        self.edges = [[-1 for i in range(num_of_vertices)] for j in range(num_of_vertices)]
+        self.visited = []
+
+    def add_edge(self, u, v, weight):
+        self.edges[u][v] = weight
+        #self.edges[v][u] = weight
+
+    def dijkstra(graph, start_vertex):
+        D = {v:sys.maxsize for v in range(graph.v)}
+        D[start_vertex] = 0
+
+        pq = PriorityQueue()
+        pq.put((0, start_vertex))
+
+        while not pq.empty():
+            (dist, current_vertex) = pq.get()
+            graph.visited.append(current_vertex)
+
+            for neighbour in range(graph.v):
+                if graph.edges[current_vertex][neighbour] != -1:
+                    distance = graph.edges[current_vertex][neighbour]
+                    if neighbour not in graph.visited:
+                        old_cost = D[neighbour]
+                        new_cost = D[current_vertex] + distance
+                        assert old_cost > 0
+                        assert new_cost > 0
+                        if new_cost < old_cost:
+                            pq.put((new_cost, neighbour))
+                            D[neighbour] = new_cost
+        return D
+
+def addInputToGraph(G, data):
+    maxx = len(data[0])
+    maxy = len(data)
+    for x in range(maxx):
+        for y in range(maxy):
+            start_edge = x + maxx * y
+            for (dx, dy) in [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]:
+                if dx in range(maxx) and dy in range(maxy):
+                    end_edge = dx + maxx * dy
+                    weight = data[dx][dy]
+                    G.add_edge(start_edge, end_edge, weight)
+
+def enlargeMap(data: list[list[int]]):
+    #insert to right
+    for x in range(len(data)):
+        for i in range(0, len(data[x]) * 4):
+            var = data[x][i]+1
+            data[x].append(var if var <= 9 else 1)
+    #insert to bottom and bottom right.
+    for x in range(0, len(data) * 4):
+        tempArr = []
+        for y in range(0, len(data[x])):
+            var = data[x][y]+1
+            tempArr.append(var if var <= 9 else 1)
+        data.append(tempArr)
+    return data
+
+def main():
+    data0 = ["01", "12"]
+    data1 = ["1163751742","1381373672","2136511328","3694931569","7463417111","1319128137","1359912421","3125421639","1293138521","2311944581"]
+    data2 = ["11637517422274862853338597396444961841755517295286","13813736722492484783351359589446246169155735727126","21365113283247622439435873354154698446526571955763","36949315694715142671582625378269373648937148475914","74634171118574528222968563933317967414442817852555","13191281372421239248353234135946434524615754563572","13599124212461123532357223464346833457545794456865","31254216394236532741534764385264587549637569865174","12931385212314249632342535174345364628545647573965","23119445813422155692453326671356443778246755488935","22748628533385973964449618417555172952866628316397","24924847833513595894462461691557357271266846838237","32476224394358733541546984465265719557637682166874","47151426715826253782693736489371484759148259586125","85745282229685639333179674144428178525553928963666","24212392483532341359464345246157545635726865674683","24611235323572234643468334575457944568656815567976","42365327415347643852645875496375698651748671976285","23142496323425351743453646285456475739656758684176","34221556924533266713564437782467554889357866599146","33859739644496184175551729528666283163977739427418","35135958944624616915573572712668468382377957949348","43587335415469844652657195576376821668748793277985","58262537826937364893714847591482595861259361697236","96856393331796741444281785255539289636664139174777","35323413594643452461575456357268656746837976785794","35722346434683345754579445686568155679767926678187","53476438526458754963756986517486719762859782187396","34253517434536462854564757396567586841767869795287","45332667135644377824675548893578665991468977611257","44961841755517295286662831639777394274188841538529","46246169155735727126684683823779579493488168151459","54698446526571955763768216687487932779859814388196","69373648937148475914825958612593616972361472718347","17967414442817852555392896366641391747775241285888","46434524615754563572686567468379767857948187896815","46833457545794456865681556797679266781878137789298","64587549637569865174867197628597821873961893298417","45364628545647573965675868417678697952878971816398","56443778246755488935786659914689776112579188722368","55172952866628316397773942741888415385299952649631","57357271266846838237795794934881681514599279262561","65719557637682166874879327798598143881961925499217","71484759148259586125936169723614727183472583829458","28178525553928963666413917477752412858886352396999","57545635726865674683797678579481878968159298917926","57944568656815567976792667818781377892989248891319","75698651748671976285978218739618932984172914319528","56475739656758684176786979528789718163989182927419","67554889357866599146897761125791887223681299833479"]
+    data3 = ao.lines
+    data = [[int(i) for i in row] for row in data3]
+    
+    assert len(data) == len(data[0])
+
+    G = Graph(len(data)**2)
+
+    addInputToGraph(G, data)
+    
+    dic = G.dijkstra(0)
+
+    res = dic[(len(data)**2)-1]
+
+    print(f"Solution for part1 = {res}")
+    #ao.submit(3587)
+
+    data = enlargeMap(data)
+
+    assert len(data) == len(data[0])
+
+    G = Graph(len(data)**2)
+
+    addInputToGraph(G, data)
+    
+    dic = G.dijkstra(0)
+
+    res = dic[(len(data)**2)-1]
+
+    print(f"Solution for part2 = {res}")
+    #ao.submit(3906445077999)
+
+if __name__ == '__main__':
+    main()
