@@ -1,13 +1,79 @@
 fn parse(input: &str) -> Vec<(char, char)> {
-    let mut vec: Vec<(char, char)> = Vec::new();
-    for line in input.split("\r\n") {
-        let line = line.trim();
-        if !line.is_empty() {
-            let tu: (char, char) = (line.chars().next().unwrap(), line.chars().nth(2).unwrap());
-            vec.push(tu);
-        }
+    input
+        .trim()
+        .lines()
+        .map(|c| (c.chars().next().unwrap(), c.chars().nth(2).unwrap()))
+        .collect()
+}
+
+enum Result {
+    Win,
+    Lose,
+    Draw,
+}
+
+enum Weapon {
+    Rock,
+    Paper,
+    Scissor,
+}
+
+fn get_weapon(c: char) -> Weapon {
+    match c {
+        'A' | 'X' => Weapon::Rock,
+        'B' | 'Y' => Weapon::Paper,
+        'C' | 'Z' => Weapon::Scissor,
+        _         => unreachable!(),
     }
-    vec
+}
+
+fn get_result(c: char) -> Result {
+    match c {
+        'X' => Result::Lose,
+        'Y' => Result::Draw,
+        'Z' => Result::Win,
+        _ => unreachable!(),
+    }
+}
+
+fn match_end_result(opponen: &Weapon, own: &Weapon) -> Result {
+    match (opponen, own) {
+        (Weapon::Rock, Weapon::Paper) => Result::Win,
+        (Weapon::Scissor, Weapon::Rock) => Result::Win,
+        (Weapon::Paper, Weapon::Scissor) => Result::Win,
+        (Weapon::Rock, Weapon::Scissor) => Result::Lose,
+        (Weapon::Scissor, Weapon::Paper) => Result::Lose,
+        (Weapon::Paper, Weapon::Rock) => Result::Lose,
+        _ => Result::Draw,
+    }
+}
+
+fn match_weapon_result(opponen: &Weapon, result: &Result) -> Weapon {
+    match (opponen, result) {
+        (Weapon::Rock, Result::Draw) => Weapon::Rock,
+        (Weapon::Scissor, Result::Win) => Weapon::Rock,
+        (Weapon::Paper, Result::Lose) => Weapon::Rock,
+        (Weapon::Rock, Result::Win) => Weapon::Paper,
+        (Weapon::Scissor, Result::Lose) => Weapon::Paper,
+        (Weapon::Paper, Result::Draw) => Weapon::Paper,
+        _ => Weapon::Scissor,
+    }
+}
+
+fn result_point(res: &Result) -> i64 {
+    match res {
+        Result::Win => 6,
+        Result::Draw => 3,
+        Result::Lose => 0,
+    }
+}
+
+fn weapon_point(weapon: &Weapon) -> i64 {
+    match weapon {
+        Weapon::Rock => 1,
+        Weapon::Paper => 2,
+        Weapon::Scissor => 3,
+    }
 }
 
 pub fn part_a(val: &Vec<(char, char)>) -> i64 {
@@ -18,27 +84,10 @@ pub fn part_a(val: &Vec<(char, char)>) -> i64 {
         //X for Rock, Y for Paper, and Z for Scissors
         //1 for Rock, 2 for Paper, and 3 for Scissors
         //0 if you lost, 3 if the round was a draw, and 6 if you won
-        if m.0 == 'A' && m.1 == 'Z' { //Rock defeats Scissors, lost
-            score += 3+0;
-        } else if m.0 == 'C' && m.1 == 'Y' { //Scissors defeats Paper, lost
-            score += 2+0;
-        } else if m.0 == 'B' && m.1 == 'X' { //Paper defeats Rock, lost
-            score += 1+0;
-        } else if m.0 == 'C' && m.1 == 'X' { //Rock defeats Scissors, won
-            score += 1+6;
-        } else if m.0 == 'B' && m.1 == 'Z' { //Scissors defeats Paper, won
-            score += 3+6;
-        } else if m.0 == 'A' && m.1 == 'Y' { //Paper defeats Rock, won
-            score += 2+6;
-        } else { //draw
-            if m.1 == 'X' {
-                score += 1+3;
-            } else if m.1 == 'Y' {
-                score += 2+3;
-            } else {
-                score += 3+3;
-            }
-        }
+        let oponent = get_weapon(m.0);
+        let own = get_weapon(m.1);
+        let res = match_end_result(&oponent, &own);
+        score += result_point(&res) + weapon_point(&own);
     }
     score
 }
@@ -51,27 +100,10 @@ pub fn part_b(val: &Vec<(char, char)>) -> i64 {
         //X lose, Y draw , Z win
         //1 for Rock, 2 for Paper, and 3 for Scissors
         //0 if you lost, 3 if the round was a draw, and 6 if you won
-        if m.0 == 'A' && m.1 == 'X' { //Rock lose, Scissors
-            score += 3+0;
-        } else if m.0 == 'A' && m.1 == 'Y' { //Rock draw, Rock
-            score += 1+3;
-        } else if m.0 == 'A' && m.1 == 'Z' { //Rock win, Paper
-            score += 2+6;
-        } else if m.0 == 'B' && m.1 == 'X' { //Paper lost, Rock
-            score += 1+0;
-        } else if m.0 == 'B' && m.1 == 'Y' { //Paper draw, Paper
-            score += 2+3;
-        } else if m.0 == 'B' && m.1 == 'Z' { //Paper win, Scissor
-            score += 3+6;
-        } else if m.0 == 'C' && m.1 == 'X' { //Scissors lost, Paper
-            score += 2+0;
-        } else if m.0 == 'C' && m.1 == 'Y' { //Scissors draw, Scissors
-            score += 3+3;
-        } else if m.0 == 'C' && m.1 == 'Z' { //Scissors win, Rock
-            score += 1+6;
-        } else {
-            panic!("Should not end here");
-        }
+        let oponent = get_weapon(m.0);
+        let res = get_result(m.1);
+        let own = match_weapon_result(&oponent, &res);
+        score += result_point(&res) + weapon_point(&own); 
     }
     score
 }
