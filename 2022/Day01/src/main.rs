@@ -7,11 +7,11 @@ fn parse(input: &str) -> Vec<i64> {
         .collect()
 }
 
-pub fn part_a(calories: &[i64]) -> i64 {
+pub fn part_1(calories: &[i64]) -> i64 {
     *calories.iter().max().unwrap()
 }
 
-pub fn part_b(calories: &[i64]) -> i64 {
+pub fn part_2(calories: &[i64]) -> i64 {
     let mut cal = calories.to_vec();
     cal.sort_by_key(|f| Reverse(*f));
     cal.iter()
@@ -21,34 +21,34 @@ pub fn part_b(calories: &[i64]) -> i64 {
 
 pub fn main() {
     let parsed = parse(include_str!("input.txt"));
-    println!("{}", part_a(&parsed));
-    println!("{}", part_b(&parsed));
+    println!("{}", part_1(&parsed));
+    println!("{}", part_2(&parsed));
 }
 
 #[cfg(test)]
 mod tests {
     #[test]
-    fn part_a_example() {
-        let parsed = super::parse(include_str!("input1.txt"));
-        assert_eq!(super::part_a(&parsed), 24000);
+    fn part_1_example() {
+        let parsed = super::parse(include_str!("input_example.txt"));
+        assert_eq!(super::part_1(&parsed), 24000);
     }
 
     #[test]
-    fn part_a() {
+    fn part_1() {
         let parsed = super::parse(include_str!("input.txt"));
-        assert_eq!(super::part_a(&parsed), 72070);
+        assert_eq!(super::part_1(&parsed), 72070);
     }
 
     #[test]
-    fn part_b_example() {
-        let parsed = super::parse(include_str!("input1.txt"));
-        assert_eq!(super::part_b(&parsed), 45000);
+    fn part_2_example() {
+        let parsed = super::parse(include_str!("input_example.txt"));
+        assert_eq!(super::part_2(&parsed), 45000);
     }
 
     #[test]
-    fn part_b() {
+    fn part_2() {
         let parsed = super::parse(include_str!("input.txt"));
-        assert_eq!(super::part_b(&parsed), 211805);
+        assert_eq!(super::part_2(&parsed), 211805);
     }
 }
 

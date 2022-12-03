@@ -6,12 +6,14 @@ fn parse(input: &str) -> Vec<(char, char)> {
         .collect()
 }
 
+#[derive(Debug)]
 enum Result {
     Win,
     Lose,
     Draw,
 }
 
+#[derive(Debug)]
 enum Weapon {
     Rock,
     Paper,
@@ -76,30 +78,16 @@ fn weapon_point(weapon: &Weapon) -> i64 {
     }
 }
 
-pub fn part_a(val: &Vec<(char, char)>) -> i64 {
-    let mut score: i64 = 0;
-    for m in val {
-        //Rock defeats Scissors, Scissors defeats Paper, and Paper defeats Rock.
-        //A for Rock, B for Paper, and C for Scissors
-        //X for Rock, Y for Paper, and Z for Scissors
-        //1 for Rock, 2 for Paper, and 3 for Scissors
-        //0 if you lost, 3 if the round was a draw, and 6 if you won
-        let oponent = get_weapon(m.0);
-        let own = get_weapon(m.1);
-        let res = match_end_result(&oponent, &own);
-        score += result_point(&res) + weapon_point(&own);
-    }
-    score
+pub fn part_1(val: &[(char, char)]) -> i64 {
+    val
+        .iter()
+        .map(|m| result_point(&match_end_result(&get_weapon(m.0), &get_weapon(m.1))) + weapon_point(&get_weapon(m.1)))
+        .sum()
 }
 
-pub fn part_b(val: &Vec<(char, char)>) -> i64 {
+pub fn part_2(val: &[(char, char)]) -> i64 {
     let mut score: i64 = 0;
     for m in val {
-        //Rock defeats Scissors, Scissors defeats Paper, and Paper defeats Rock.
-        //A Rock, B Paper, C Scissors
-        //X lose, Y draw , Z win
-        //1 for Rock, 2 for Paper, and 3 for Scissors
-        //0 if you lost, 3 if the round was a draw, and 6 if you won
         let oponent = get_weapon(m.0);
         let res = get_result(m.1);
         let own = match_weapon_result(&oponent, &res);
@@ -111,33 +99,33 @@ pub fn part_b(val: &Vec<(char, char)>) -> i64 {
 pub fn main() {
     let parsed = parse(include_str!("input.txt"));
     println!("2022 Day02");
-    println!("Part 1: {}", part_a(&parsed));
-    println!("Part 2: {}", part_b(&parsed));
+    println!("Part 1: {}", part_1(&parsed));
+    println!("Part 2: {}", part_2(&parsed));
 }
 
 #[cfg(test)]
 mod tests {
     #[test]
-    fn part_a_example() {
-        let parsed = super::parse(include_str!("input1.txt"));
-        assert_eq!(super::part_a(&parsed), 15);
+    fn part_1_example() {
+        let parsed = super::parse(include_str!("input_example.txt"));
+        assert_eq!(super::part_1(&parsed), 15);
     }
 
     #[test]
-    fn part_a() {
+    fn part_1() {
         let parsed = super::parse(include_str!("input.txt"));
-        assert_eq!(super::part_a(&parsed), 12794);
+        assert_eq!(super::part_1(&parsed), 12794);
     }
 
     #[test]
-    fn part_b_example() {
-        let parsed = super::parse(include_str!("input1.txt"));
-        assert_eq!(super::part_b(&parsed), 12);
+    fn part_2_example() {
+        let parsed = super::parse(include_str!("input_example.txt"));
+        assert_eq!(super::part_2(&parsed), 12);
     }
 
     #[test]
-    fn part_b() {
+    fn part_2() {
         let parsed = super::parse(include_str!("input.txt"));
-        assert_eq!(super::part_b(&parsed), 14979);
+        assert_eq!(super::part_2(&parsed), 14979);
     }
 }
