@@ -1,58 +1,61 @@
 use std::collections::HashSet;
 
-static ASCII: &str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+fn letter_priority(letter: &char) -> i64 {
+    if letter.is_uppercase() {
+        *letter as i64 - 38
+    }
+    else {
+        *letter as i64 - 96
+    }
+}
 
-fn parse(input: &str) -> Vec<(HashSet<char>, HashSet<char>)> {
+fn parse(input: &str) -> Vec<(&str, &str)> {
     input
         .trim()
         .lines()
         .map(|c| c.split_at(c.len()/2))
-        .map(|c| (c.0.chars().collect(), c.1.chars().collect()))
         .collect()
 }
 
-pub fn part_1(val: &[(HashSet<char>, HashSet<char>)]) -> i64 {
-    let mut count: i64 = 0;
-    for m in val {
+pub fn part_1(val: &[(&str, &str)]) -> i64 {
+    let vector_of_hash_sets: Vec<(HashSet<char>, HashSet<char>)> = val
+        .iter()
+        .map(|f| (f.0.chars().collect(), f.1.chars().collect()))
+        .collect();
 
-        let inter: HashSet<_> = m.0.intersection(&m.1).collect();
-
-        assert!(inter.len() == 1);
-
-        let c = match inter.iter().next() {
-            Some(&x) => *x,
-            None => panic!("No type"),
-        };
-
-        let pos = ASCII.chars().position(|x| x == c).unwrap() as i64;
-        count += pos + 1;
-    }
-    count
+    vector_of_hash_sets
+        .iter()
+        .map(|m| letter_priority(m.0.intersection(&m.1).next().unwrap()))
+        .sum()
 }
 
-pub fn part_2(val: &[(HashSet<char>, HashSet<char>)]) -> i64 {
+pub fn part_2(val: &[(&str, &str)]) -> i64 {
+    let vector_of_str: Vec<String> = val
+        .iter()
+        .map(|c| (c.0.to_string() +  c.1))
+        .collect();
+
+    let vector_of_hashset: Vec<HashSet<char>> = vector_of_str
+        .iter()
+        .map(|f| (f.chars().collect()))
+        .collect();
+        
     let mut count: i64 = 0;
     assert!(val.len() % 3 == 0);
 
     let mut i = 0;
-    while i < val.len() {
-        let mut a: HashSet<char> = HashSet::new();
-        let mut b: HashSet<char> = HashSet::new();
-        let mut c: HashSet<char> = HashSet::new();
-        a.extend(val[i+0].0.clone());
-        a.extend(val[i+0].1.clone());
-        b.extend(val[i+1].0.clone());
-        b.extend(val[i+1].1.clone());
-        c.extend(val[i+2].0.clone());
-        c.extend(val[i+2].1.clone());
+    while i < vector_of_hashset.len() {
+        let a: &HashSet<char> = &vector_of_hashset[i+0];
+        let b: &HashSet<char> = &vector_of_hashset[i+1];
+        let c: &HashSet<char> = &vector_of_hashset[i+2];
 
-        let d: HashSet<char> = a.into_iter().filter(|e| b.contains(e)).collect();
-        let e: HashSet<char> = d.into_iter().filter(|e| c.contains(e)).collect();
-        
-        assert!(e.len() == 1);
+        let sum: i64 = a
+            .iter()
+            .filter(|f| b.contains(*f) && c.contains(*f))
+            .map(letter_priority)
+            .sum();
 
-        let pos = ASCII.chars().position(|x| x == *e.iter().next().unwrap()).unwrap() as i64;
-        count += pos + 1;
+        count += sum;
 
         i+=3;
     }
@@ -62,7 +65,7 @@ pub fn part_2(val: &[(HashSet<char>, HashSet<char>)]) -> i64 {
 
 pub fn main() {
     let parsed = parse(include_str!("input.txt"));
-    println!("2022 Day02");
+    println!("2022 Day03");
     println!("Part 1: {}", part_1(&parsed));
     println!("Part 2: {}", part_2(&parsed));
 }
