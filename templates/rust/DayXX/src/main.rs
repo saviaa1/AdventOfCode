@@ -1,46 +1,18 @@
-use std::collections::HashSet;
-use itertools::Itertools;
-
-fn letter_priority(letter: &char) -> i64 {
-    if letter.is_uppercase() {
-        *letter as i64 - 38
-    }
-    else {
-        *letter as i64 - 96
-    }
-}
-
 fn parse(input: &str) -> Vec<(&str, &str)> {
-    input
-        .trim()
-        .lines()
-        .map(|c| c.split_at(c.len()/2))
-        .collect()
+    unimplemented!();
 }
 
 pub fn part_1(val: &[(&str, &str)]) -> i64 {
-    val
-        .iter()
-        .map(|f| (f.0.chars().collect::<HashSet<char>>(), f.1.chars().collect::<HashSet<char>>()))
-        .map(|m| letter_priority(m.0.intersection(&m.1).next().unwrap()))
-        .sum()
+    unimplemented!();
 }
 
 pub fn part_2(val: &[(&str, &str)]) -> i64 {
-    assert!(val.len() % 3 == 0);
-
-    val
-        .iter()
-        .map(|c| (c.0.to_string() +  c.1))
-        .map(|f| (f.chars().collect::<HashSet<char>>()))
-        .tuples()
-        .map(|(a,b,c)| a.iter().filter(|s| b.contains(s) && c.contains(s)).map(letter_priority).sum::<i64>())
-        .sum()
+    unimplemented!();
 }
 
 pub fn main() {
     let parsed = parse(include_str!("input.txt"));
-    println!("2022 Day03");
+    println!("2022 DayXX");
     println!("Part 1: {}", part_1(&parsed));
     println!("Part 2: {}", part_2(&parsed));
 }

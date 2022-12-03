@@ -21,8 +21,9 @@ pub fn part_2(calories: &[i64]) -> i64 {
 
 pub fn main() {
     let parsed = parse(include_str!("input.txt"));
-    println!("{}", part_1(&parsed));
-    println!("{}", part_2(&parsed));
+    println!("2022 Day01");
+    println!("Part 1: {}", part_1(&parsed));
+    println!("Part 2: {}", part_2(&parsed));
 }
 
 #[cfg(test)]
