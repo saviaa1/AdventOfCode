@@ -4,10 +4,12 @@ fn parse(input: &str) -> Parsed {
     input
         .trim()
         .lines()
-        .map(|f| f.trim().split_once(',').unwrap())
-        .map(|f| (f.0.split_once('-').unwrap(), f.1.split_once('-').unwrap()))
-        .map(|f| (f.0.0.parse::<i64>().unwrap(), f.0.1.parse::<i64>().unwrap(), f.1.0.parse::<i64>().unwrap(), f.1.1.parse::<i64>().unwrap()))
-        .collect()
+        .map(|f| {
+            let (x, y) = f.split_once(',').unwrap();
+            let (a,b) = x.split_once('-').unwrap();
+            let (c,d) = y.split_once('-').unwrap();
+            (a.parse::<i64>().unwrap(), b.parse::<i64>().unwrap(), c.parse::<i64>().unwrap(), d.parse::<i64>().unwrap())
+        }).collect()
 }
 
 /**
