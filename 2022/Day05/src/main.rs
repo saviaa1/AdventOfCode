@@ -1,64 +1,53 @@
+use regex::Regex;
+
 type ReturnType = String;
+type Stack = Vec<Vec<char>>;
+type Moves = Vec<(usize, usize, usize)>;
 
-fn stack_input_example() -> Vec<Vec<char>> {
-    let mut a = vec![
-        vec!['N', 'Z'],
-        vec!['D', 'C', 'M'],
-        vec!['P']
-    ];
-
-    for v in a.iter_mut() {
-        v.reverse();
-    }
-
-    a
-}
-
-fn stack_input() -> Vec<Vec<char>> {
-    let mut a = vec![
-        vec!['N', 'Q', 'L', 'S', 'C', 'Z', 'P', 'T'],
-        vec!['G', 'C', 'H', 'V', 'T', 'P', 'L'],
-        vec!['F', 'Z', 'C', 'D'],
-        vec!['C', 'V', 'M', 'L', 'D', 'T', 'W', 'G'],
-        vec!['C', 'W', 'P'],
-        vec!['Z', 'S', 'T', 'C', 'D', 'J', 'F', 'P'],
-        vec!['D', 'B', 'G', 'W', 'V'],
-        vec!['W', 'H', 'Q', 'S', 'J', 'N'],
-        vec!['V', 'L', 'S', 'F', 'Q', 'C', 'R']
-    ];
-
-    for v in a.iter_mut() {
-        v.reverse();
-    }
-
-    a
-}
-
-
-fn parse(input: &str) -> Vec<(usize, usize, usize)> {
-    let (_, moves): (&str, &str) = input
+fn parse(input: &str) -> (Stack, Moves) {
+    let (stack, moves): (&str, &str) = input
         .split_once("\r\n\r\n")
         .unwrap();
 
+    let stack = stack
+        .split('\n')
+        .map(|f| f.chars().collect::<Vec<char>>())
+        .collect::<Vec<Vec<char>>>();
+
+    let mut t = vec![Vec::with_capacity(stack.len()); stack[0].len()];
+    for r in stack {
+        for i in 0..r.len() {
+            t[i].push(r[i]);
+        }
+    }
+
+    t.iter_mut().for_each(|f| f.reverse());
+
+    let stack = t
+        .into_iter()
+        .map(|f| f.into_iter().filter(|g| g.is_ascii_alphabetic()).collect::<Vec<char>>())
+        .filter(|f| !f.is_empty())
+        .collect::<Vec<Vec<char>>>();
+
+    let regex = Regex::new(r"move (\d+) from (\d+) to (\d+)").unwrap();
     let moves = moves
         .trim()
         .split("\r\n")
         .map(|f| {
-            let s = f.split(' ').collect::<Vec<&str>>();
-            (s[1].parse::<usize>().unwrap(), s[3].parse::<usize>().unwrap(), s[5].parse::<usize>().unwrap())
+            let cap = regex.captures(f).unwrap();
+            (cap[1].parse::<usize>().unwrap(), cap[2].parse::<usize>().unwrap() - 1, cap[3].parse::<usize>().unwrap() - 1)
         })
         .collect::<Vec<(usize, usize, usize)>>();
 
-    moves
+    (stack, moves)
 }
 
-pub fn part_1(val: &[(usize, usize, usize)], stack: Vec<Vec<char>>) -> ReturnType {
-    let mut stack = stack;
+pub fn part_1(stack: &Stack, val: &[(usize, usize, usize)]) -> ReturnType {
+    let mut stack = stack.clone();
     for v in val {
-        //move 1 from 2 to 1
         for _ in 1..=(v.0) {
-            let a = stack[v.1-1].pop().unwrap();
-            stack[v.2-1].push(a);
+            let a = stack[v.1].pop().unwrap();
+            stack[v.2].push(a);
         }
     }
 
@@ -70,17 +59,16 @@ pub fn part_1(val: &[(usize, usize, usize)], stack: Vec<Vec<char>>) -> ReturnTyp
     a.iter().collect()
 }
 
-pub fn part_2(val: &[(usize, usize, usize)], stack: Vec<Vec<char>>) -> ReturnType {
-    let mut stack = stack;
+pub fn part_2(stack: &Stack, val: &[(usize, usize, usize)]) -> ReturnType {
+    let mut stack = stack.clone();
     for v in val {
-        //move 1 from 2 to 1
         let mut temp_v: Vec<char> = Vec::new();
         for _ in 1..=(v.0) {
-            let a = stack[v.1-1].pop().unwrap();
+            let a = stack[v.1].pop().unwrap();
             temp_v.push(a);
         }
         temp_v.reverse();
-        stack[v.2-1].extend(temp_v);
+        stack[v.2].extend(temp_v);
     }
 
     let a = stack
@@ -92,35 +80,35 @@ pub fn part_2(val: &[(usize, usize, usize)], stack: Vec<Vec<char>>) -> ReturnTyp
 }
 
 pub fn main() {
-    let parsed = parse(include_str!("input.txt"));
+    let (stack, parsed) = parse(include_str!("input.txt"));
     println!("2022 Day05");
-    println!("Part 1: {}", part_1(&parsed, stack_input()));
-    println!("Part 2: {}", part_2(&parsed, stack_input()));
+    println!("Part 1: {}", part_1(&stack, &parsed));
+    println!("Part 2: {}", part_2(&stack, &parsed));
 }
 
 #[cfg(test)]
 mod tests {
     #[test]
     fn part_1_example() {
-        let parsed = super::parse(include_str!("input_example.txt"));
-        assert_eq!(super::part_1(&parsed, super::stack_input_example()), "CMZ");
+        let (stack, parsed) = super::parse(include_str!("input_example.txt"));
+        assert_eq!(super::part_1(&stack, &parsed), "CMZ");
     }
 
     #[test]
     fn part_1() {
-        let parsed = super::parse(include_str!("input.txt"));
-        assert_eq!(super::part_1(&parsed, super::stack_input()), "SVFDLGLWV");
+        let (stack, parsed) = super::parse(include_str!("input.txt"));
+        assert_eq!(super::part_1(&stack, &parsed), "SVFDLGLWV");
     }
 
     #[test]
     fn part_2_example() {
-        let parsed = super::parse(include_str!("input_example.txt"));
-        assert_eq!(super::part_2(&parsed, super::stack_input_example()), "MCD");
+        let (stack, parsed) = super::parse(include_str!("input_example.txt"));
+        assert_eq!(super::part_2(&stack, &parsed), "MCD");
     }
 
     #[test]
     fn part_2() {
-        let parsed = super::parse(include_str!("input.txt"));
-        assert_eq!(super::part_2(&parsed, super::stack_input()), "DCVTCVPCL");
+        let (stack, parsed) = super::parse(include_str!("input.txt"));
+        assert_eq!(super::part_2(&stack, &parsed), "DCVTCVPCL");
     }
 }

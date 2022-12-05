@@ -1,4 +1,5 @@
-type Parsed = Vec<(i64, i64, i64, i64)>;
+type Vec4d = (i64, i64, i64, i64);
+type Parsed = Vec<Vec4d>;
 
 fn parse(input: &str) -> Parsed {
     input
@@ -13,26 +14,30 @@ fn parse(input: &str) -> Parsed {
 }
 
 /**
- * Check if (x0,y0) is inside (x1,y1) or wise versa.
+ * Check if (x0,y0) is fully inside (x1,y1) or wise versa.
  */
-fn check_if_contains(x0: i64, y0: i64, x1: i64, y1: i64) -> bool {
-    x0 >= x1 && x0 <= y1 && y0 >= x1 && y0 <= y1 || x1 >= x0 && x1 <= y0 && y1 >= x0 && y1 <= y0
+fn check_if_contains(vec: &Vec4d) -> bool {
+    let l = vec.0..=vec.1;
+    let r = vec.2..=vec.3;
+    l.contains(r.start()) && l.contains(r.end()) || r.contains(l.start()) && r.contains(l.end())
 }
 
 /**
  * Check if (x0,y0) overlaps (x1,y1) or wise versa.
  */
-fn check_if_overlaps(x0: i64, y0: i64, x1: i64, y1: i64) -> bool {
-    x0 >= x1 && x0 <= y1 || y0 >= x1 && y0 <= y1 || x1 >= x0 && x1 <= y0 || y1 >= x0 && y1 <= y0
+fn check_if_overlaps(vec: &Vec4d) -> bool {
+    let l = vec.0..=vec.1;
+    let r = vec.2..=vec.3;
+    l.contains(r.start()) || l.contains(r.end()) || r.contains(l.start()) || r.contains(l.end())
 }
 
 
 pub fn part_1(val: &Parsed) -> i64 {
-    val.iter().filter(|f| check_if_contains(f.0, f.1, f.2, f.3)).count() as i64
+    val.iter().filter(|f| check_if_contains(f)).count() as i64
 }
 
 pub fn part_2(val: &Parsed) -> i64 {
-    val.iter().filter(|f| check_if_overlaps(f.0, f.1, f.2, f.3)).count() as i64
+    val.iter().filter(|f| check_if_overlaps(f)).count() as i64
 }
 
 pub fn main() {
