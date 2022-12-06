@@ -7,7 +7,7 @@ type ParsedTIn = (Stack, Moves);
 type ReturnT = String;
 
 
-fn parse(input: &str) -> ParsedTOut {
+pub fn parse(input: &str) -> ParsedTOut {
     let (stack, moves): (&str, &str) = input
         .split_once("\r\n\r\n")
         .unwrap();
@@ -82,13 +82,6 @@ pub fn part_2(val: &ParsedTIn) -> ReturnT {
         .collect::<Vec<char>>();
 
     a.iter().collect()
-}
-
-pub fn main() {
-    let parsed = parse(include_str!("input.txt"));
-    println!("2022 Day05");
-    println!("Part 1: {}", part_1(&parsed));
-    println!("Part 2: {}", part_2(&parsed));
 }
 
 #[cfg(test)]

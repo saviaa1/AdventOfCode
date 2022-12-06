@@ -2,7 +2,7 @@ type ParsedTOut<'a> = Vec<&'a str>;
 type ParsedTIn<'a> = [&'a str];
 type ReturnT = i64;
 
-fn parse(_input: &str) -> ParsedTOut {
+pub fn parse(_input: &str) -> ParsedTOut {
     unimplemented!();
 }
 
@@ -12,13 +12,6 @@ pub fn part_1(_val: &ParsedTIn) -> ReturnT {
 
 pub fn part_2(_val: &ParsedTIn) -> ReturnT {
     unimplemented!();
-}
-
-pub fn main() {
-    let parsed = parse(include_str!("input.txt"));
-    println!("2022 DayXX");
-    println!("Part 1: {}", part_1(&parsed));
-    println!("Part 2: {}", part_2(&parsed));
 }
 
 #[cfg(test)]

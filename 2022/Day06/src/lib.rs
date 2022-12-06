@@ -4,40 +4,37 @@ type ParsedTOut = Vec<char>;
 type ParsedTIn = [char];
 type ReturnT = i64;
 
-fn parse(input: &str) -> ParsedTOut {
+pub fn parse(input: &str) -> ParsedTOut {
     input.trim().chars().collect::<ParsedTOut>()
 }
 
 pub fn part_1(val: &ParsedTIn) -> ReturnT {
-    for f in  val.iter().enumerate().collect::<Vec<(usize, &char)>>().windows(4) {
-        let mut hset: HashSet<&char> = HashSet::new();
-        if hset.insert(f[0].1) && hset.insert(f[1].1) && hset.insert(f[2].1) && hset.insert(f[3].1) {
-            return (f[3].0 + 1) as ReturnT
+    let mut count: i64 = 4;
+    for window in  val.windows(4) {
+        let hset: HashSet<&char> = HashSet::from_iter(window.iter());
+        if hset.len() == 4 {
+            return count;
         }
+        count += 1;
     }
     panic!("Result not found!")
 }
 
 pub fn part_2(val: &ParsedTIn) -> ReturnT {
-    for f in  val.iter().enumerate().collect::<Vec<(usize, &char)>>().windows(14) {
+    let mut count: i64 = 14;
+    for window in  val.windows(14) {
         let mut hset: HashSet<&char> = HashSet::new();
-        for i in 0..=13 {
-            if !hset.insert(f[i].1) {
+        for i in window.iter() {
+            if !hset.insert(i) {
                 break;
             }
         }
         if hset.len() == 14 {
-            return (f[13].0 + 1) as ReturnT
+            return count;
         }
+        count += 1;
     }
     panic!("Result not found!")
-}
-
-pub fn main() {
-    let parsed = parse(include_str!("input.txt"));
-    println!("2022 Day06");
-    println!("Part 1: {}", part_1(&parsed));
-    println!("Part 2: {}", part_2(&parsed));
 }
 
 #[cfg(test)]

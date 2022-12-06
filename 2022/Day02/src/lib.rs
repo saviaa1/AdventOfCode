@@ -2,7 +2,7 @@ type ParsedTOut = Vec<(char, char)>;
 type ParsedTIn = [(char, char)];
 type ReturnT = i64;
 
-fn parse(input: &str) -> ParsedTOut {
+pub fn parse(input: &str) -> ParsedTOut {
     input
         .trim()
         .lines()
@@ -98,13 +98,6 @@ pub fn part_2(val: &ParsedTIn) -> ReturnT {
         score += result_point(&res) + weapon_point(&own); 
     }
     score
-}
-
-pub fn main() {
-    let parsed = parse(include_str!("input.txt"));
-    println!("2022 Day02");
-    println!("Part 1: {}", part_1(&parsed));
-    println!("Part 2: {}", part_2(&parsed));
 }
 
 #[cfg(test)]

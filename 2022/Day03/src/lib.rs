@@ -14,7 +14,7 @@ fn letter_priority(letter: &char) -> i64 {
     }
 }
 
-fn parse(input: &str) -> ParsedTOut {
+pub fn parse(input: &str) -> ParsedTOut {
     input
         .trim()
         .lines()
@@ -40,13 +40,6 @@ pub fn part_2(val: &ParsedTIn) -> ReturnT {
         .tuples()
         .map(|(a,b,c)| a.iter().filter(|s| b.contains(s) && c.contains(s)).map(letter_priority).sum::<i64>())
         .sum()
-}
-
-pub fn main() {
-    let parsed = parse(include_str!("input.txt"));
-    println!("2022 Day03");
-    println!("Part 1: {}", part_1(&parsed));
-    println!("Part 2: {}", part_2(&parsed));
 }
 
 #[cfg(test)]
