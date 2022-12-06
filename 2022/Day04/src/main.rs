@@ -1,7 +1,9 @@
 type Vec4d = (i64, i64, i64, i64);
-type Parsed = Vec<Vec4d>;
+type ParsedTOut = Vec<Vec4d>;
+type ParsedTIn = [Vec4d];
+type ReturnT = i64;
 
-fn parse(input: &str) -> Parsed {
+fn parse(input: &str) -> ParsedTOut {
     input
         .trim()
         .lines()
@@ -32,11 +34,11 @@ fn check_if_overlaps(vec: &Vec4d) -> bool {
 }
 
 
-pub fn part_1(val: &Parsed) -> i64 {
+pub fn part_1(val: &ParsedTIn) -> ReturnT {
     val.iter().filter(|f| check_if_contains(f)).count() as i64
 }
 
-pub fn part_2(val: &Parsed) -> i64 {
+pub fn part_2(val: &ParsedTIn) -> ReturnT {
     val.iter().filter(|f| check_if_overlaps(f)).count() as i64
 }
 

@@ -1,41 +1,36 @@
 use std::collections::HashSet;
 
-fn parse(input: &str) -> Vec<char> {
-    input.trim().chars().collect::<Vec<char>>()
+type ParsedTOut = Vec<char>;
+type ParsedTIn = [char];
+type ReturnT = i64;
+
+fn parse(input: &str) -> ParsedTOut {
+    input.trim().chars().collect::<ParsedTOut>()
 }
 
-pub fn part_1(val: &[char]) -> i64 {
-    let mut result: i64 = 0;
-    let indexed_char = val.iter().enumerate().collect::<Vec<(usize, &char)>>();
-    for f in  indexed_char.windows(4) {
-        let start_index = f[3].0 + 1;
+pub fn part_1(val: &ParsedTIn) -> ReturnT {
+    for f in  val.iter().enumerate().collect::<Vec<(usize, &char)>>().windows(4) {
         let mut hset: HashSet<&char> = HashSet::new();
-        f.iter().for_each(|g| {
-            let _ = hset.insert(g.1);
-        });
-        if hset.len() == 4 {
-            result = start_index as i64;
-            break;
+        if hset.insert(f[0].1) && hset.insert(f[1].1) && hset.insert(f[2].1) && hset.insert(f[3].1) {
+            return (f[3].0 + 1) as ReturnT
         }
     }
-    result
+    panic!("Result not found!")
 }
 
-pub fn part_2(val: &[char]) -> i64 {
-    let mut result: i64 = 0;
-    let indexed_char = val.iter().enumerate().collect::<Vec<(usize, &char)>>();
-    for f in  indexed_char.windows(14) {
-        let start_index = f[13].0 + 1;
+pub fn part_2(val: &ParsedTIn) -> ReturnT {
+    for f in  val.iter().enumerate().collect::<Vec<(usize, &char)>>().windows(14) {
         let mut hset: HashSet<&char> = HashSet::new();
-        f.iter().for_each(|g| {
-            let _ = hset.insert(g.1);
-        });
+        for i in 0..=13 {
+            if !hset.insert(f[i].1) {
+                break;
+            }
+        }
         if hset.len() == 14 {
-            result = start_index as i64;
-            break;
+            return (f[13].0 + 1) as ReturnT
         }
     }
-    result
+    panic!("Result not found!")
 }
 
 pub fn main() {

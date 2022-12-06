@@ -1,6 +1,10 @@
 use std::collections::HashSet;
 use itertools::Itertools;
 
+type ParsedTOut<'a> = Vec<(&'a str, &'a str)>;
+type ParsedTIn<'a> = [(&'a str, &'a str)];
+type ReturnT = i64;
+
 fn letter_priority(letter: &char) -> i64 {
     if letter.is_uppercase() {
         *letter as i64 - 38
@@ -10,7 +14,7 @@ fn letter_priority(letter: &char) -> i64 {
     }
 }
 
-fn parse(input: &str) -> Vec<(&str, &str)> {
+fn parse(input: &str) -> ParsedTOut {
     input
         .trim()
         .lines()
@@ -18,7 +22,7 @@ fn parse(input: &str) -> Vec<(&str, &str)> {
         .collect()
 }
 
-pub fn part_1(val: &[(&str, &str)]) -> i64 {
+pub fn part_1(val: &ParsedTIn) -> ReturnT {
     val
         .iter()
         .map(|f| (f.0.chars().collect::<HashSet<char>>(), f.1.chars().collect::<HashSet<char>>()))
@@ -26,7 +30,7 @@ pub fn part_1(val: &[(&str, &str)]) -> i64 {
         .sum()
 }
 
-pub fn part_2(val: &[(&str, &str)]) -> i64 {
+pub fn part_2(val: &ParsedTIn) -> ReturnT {
     assert!(val.len() % 3 == 0);
 
     val

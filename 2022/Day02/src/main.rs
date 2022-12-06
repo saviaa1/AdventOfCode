@@ -1,4 +1,8 @@
-fn parse(input: &str) -> Vec<(char, char)> {
+type ParsedTOut = Vec<(char, char)>;
+type ParsedTIn = [(char, char)];
+type ReturnT = i64;
+
+fn parse(input: &str) -> ParsedTOut {
     input
         .trim()
         .lines()
@@ -78,14 +82,14 @@ fn weapon_point(weapon: &Weapon) -> i64 {
     }
 }
 
-pub fn part_1(val: &[(char, char)]) -> i64 {
+pub fn part_1(val: &ParsedTIn) -> ReturnT {
     val
         .iter()
         .map(|m| result_point(&match_end_result(&get_weapon(m.0), &get_weapon(m.1))) + weapon_point(&get_weapon(m.1)))
         .sum()
 }
 
-pub fn part_2(val: &[(char, char)]) -> i64 {
+pub fn part_2(val: &ParsedTIn) -> ReturnT {
     let mut score: i64 = 0;
     for m in val {
         let oponent = get_weapon(m.0);

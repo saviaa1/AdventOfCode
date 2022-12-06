@@ -1,17 +1,21 @@
 use std::cmp::Reverse;
 
-fn parse(input: &str) -> Vec<i64> {
+type ParsedTOut = Vec<i64>;
+type ParsedTIn = [i64];
+type ReturnT = i64;
+
+fn parse(input: &str) -> ParsedTOut {
     input
         .split("\r\n\r\n")
         .map(|c| c.lines().filter_map(|l| l.parse::<i64>().ok()).sum())
         .collect()
 }
 
-pub fn part_1(calories: &[i64]) -> i64 {
+pub fn part_1(calories: &ParsedTIn) -> ReturnT {
     *calories.iter().max().unwrap()
 }
 
-pub fn part_2(calories: &[i64]) -> i64 {
+pub fn part_2(calories: &ParsedTIn) -> ReturnT {
     let mut cal = calories.to_vec();
     cal.sort_by_key(|f| Reverse(*f));
     cal.iter()

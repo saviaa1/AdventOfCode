@@ -1,12 +1,16 @@
-fn parse(input: &str) -> Vec<(&str, &str)> {
+type ParsedTOut<'a> = Vec<&'a str>;
+type ParsedTIn<'a> = [&'a str];
+type ReturnT = i64;
+
+fn parse(_input: &str) -> ParsedTOut {
     unimplemented!();
 }
 
-pub fn part_1(val: &[(&str, &str)]) -> i64 {
+pub fn part_1(_val: &ParsedTIn) -> ReturnT {
     unimplemented!();
 }
 
-pub fn part_2(val: &[(&str, &str)]) -> i64 {
+pub fn part_2(_val: &ParsedTIn) -> ReturnT {
     unimplemented!();
 }
 
