@@ -1,36 +1,42 @@
+use std::collections::VecDeque;
 use regex::Regex;
 
-type Stack = Vec<Vec<char>>;
-type Moves = Vec<(usize, usize, usize)>;
+type Stack = Vec<VecDeque<char>>;
+type Moves = Vec<Move>;
 type ParsedTOut = (Stack, Moves);
 type ParsedTIn = (Stack, Moves);
 type ReturnT = String;
 
+pub struct Move {
+    n: usize,
+    from: usize,
+    to: usize,
+}
 
 pub fn parse(input: &str) -> ParsedTOut {
     let (stack, moves): (&str, &str) = input
         .split_once("\r\n\r\n")
         .unwrap();
 
-    let stack = stack
-        .split('\n')
-        .map(|f| f.chars().collect::<Vec<char>>())
-        .collect::<Vec<Vec<char>>>();
 
-    let mut t = vec![Vec::with_capacity(stack.len()); stack[0].len()];
-    for r in stack {
-        for i in 0..r.len() {
-            t[i].push(r[i]);
+    let mut stacks = Vec::new();
+    for line in stack.lines() {
+        let chars: Vec<char> = line.trim_end().chars().collect();
+        if chars[1] == '1' {
+            break;
         }
+        let n = (chars.len() + 1) / 4;
+        for _ in stacks.len()..n {
+            stacks.push(VecDeque::new());
+        }
+        
+        stacks.iter_mut().enumerate().take(n).for_each(|f| {
+            let pos_char = f.0 * 4 + 1;
+            if chars[pos_char] != ' ' {
+                f.1.push_front(chars[pos_char]);
+            }
+        });
     }
-
-    t.iter_mut().for_each(|f| f.reverse());
-
-    let stack = t
-        .into_iter()
-        .map(|f| f.into_iter().filter(|g| g.is_ascii_alphabetic()).collect::<Vec<char>>())
-        .filter(|f| !f.is_empty())
-        .collect::<Vec<Vec<char>>>();
 
     let regex = Regex::new(r"move (\d+) from (\d+) to (\d+)").unwrap();
     let moves = moves
@@ -38,50 +44,34 @@ pub fn parse(input: &str) -> ParsedTOut {
         .split("\r\n")
         .map(|f| {
             let cap = regex.captures(f).unwrap();
-            (cap[1].parse::<usize>().unwrap(), cap[2].parse::<usize>().unwrap() - 1, cap[3].parse::<usize>().unwrap() - 1)
+            Move{n: cap[1].parse::<usize>().unwrap(), from: cap[2].parse::<usize>().unwrap() - 1, to: cap[3].parse::<usize>().unwrap() - 1}
         })
-        .collect::<Vec<(usize, usize, usize)>>();
+        .collect::<Moves>();
 
-    (stack, moves)
+    (stacks, moves)
 }
 
 pub fn part_1(val: &ParsedTIn) -> ReturnT {
     let (stack, moves) = val;
     let mut stack = stack.clone();
-    for v in moves {
-        for _ in 1..=(v.0) {
-            let a = stack[v.1].pop().unwrap();
-            stack[v.2].push(a);
-        }
+    for m in moves {
+        let a = stack.get_mut(m.from).unwrap();
+        let mut b = a.split_off(a.len() - m.n);
+        b.make_contiguous().reverse();
+        stack[m.to].append(&mut b);
     }
-
-    let a = stack
-        .iter_mut()
-        .map(|f| f.pop().unwrap())
-        .collect::<Vec<char>>();
-
-    a.iter().collect()
+    stack.iter().map_while(VecDeque::back).collect()
 }
 
 pub fn part_2(val: &ParsedTIn) -> ReturnT {
     let (stack, moves) = val;
     let mut stack = stack.clone();
-    for v in moves {
-        let mut temp_v: Vec<char> = Vec::new();
-        for _ in 1..=(v.0) {
-            let a = stack[v.1].pop().unwrap();
-            temp_v.push(a);
-        }
-        temp_v.reverse();
-        stack[v.2].extend(temp_v);
+    for m in moves {
+        let a = stack.get_mut(m.from).unwrap();
+        let mut b = a.split_off(a.len() - m.n);
+        stack[m.to].append(&mut b);
     }
-
-    let a = stack
-        .iter_mut()
-        .map(|f| f.pop().unwrap())
-        .collect::<Vec<char>>();
-
-    a.iter().collect()
+    stack.iter().map_while(VecDeque::back).collect()
 }
 
 #[cfg(test)]
@@ -109,4 +99,17 @@ mod tests {
         let parsed = super::parse(include_str!("input.txt"));
         assert_eq!(super::part_2(&parsed), "DCVTCVPCL");
     }
+    
+    #[test]
+    fn part_1_large() { // 1171s -> 79s (18 in release)
+        let parsed = super::parse(include_str!("large_input.txt"));
+        assert_eq!(super::part_1(&parsed), "GATHERING");
+    }
+    
+    #[test]
+    fn part_2_large() { //? Really long.
+        let parsed = super::parse(include_str!("large_input.txt"));
+        assert_eq!(super::part_1(&parsed), "GATHERING"); //DEVSCHUUR
+    }
+    
 }
