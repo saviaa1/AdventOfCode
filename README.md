@@ -68,13 +68,13 @@ For year 2020 I have only solved 9 rounds but for 2021 I have solved all.
 
 | Round | Solved | Language | Note |
 | :---: | :----: | :------: | :--: |
-|   1   |        |          |      |
-|   2   |        |          |      |
-|   3   |        |          |      |
-|   4   |        |          |      |
-|   5   |        |          |      |
-|   6   |        |          |      |
-|   7   |        |          |      |
+|   1   |  Yes   |   Rust   |      |
+|   2   |  Yes   |   Rust   |      |
+|   3   |  Yes   |   Rust   |      |
+|   4   |  Yes   |   Rust   |      |
+|   5   |  Yes   |   Rust   |      |
+|   6   |  Yes   |   Rust   |      |
+|   7   |  Yes   |   Rust   |      |
 |   8   |        |          |      |
 |   9   |        |          |      |
 |  10   |        |          |      |
