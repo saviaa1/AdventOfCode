@@ -1,4 +1,4 @@
-use day08::*;
+use day09::*;
 
 use criterion::{
     black_box,
@@ -9,7 +9,7 @@ use criterion::{
 
 fn parse_benchmark(c: &mut Criterion) {
     c.bench_function(
-        "Day08::parse", 
+        "Day09::parse", 
         |b| b.iter(|| parse(include_str!("../src/input.txt")))
     );
 }
@@ -17,7 +17,7 @@ fn parse_benchmark(c: &mut Criterion) {
 fn part1_benchmark(c: &mut Criterion) {
     let parsed = black_box(parse(include_str!("../src/input.txt")));
     c.bench_function(
-        "Day08::part1", 
+        "Day09::part1", 
         |b| b.iter(|| part_1(&parsed))
     );
 }
@@ -25,14 +25,14 @@ fn part1_benchmark(c: &mut Criterion) {
 fn part2_benchmark(c: &mut Criterion) {
     let parsed = black_box(parse(include_str!("../src/input.txt")));
     c.bench_function(
-        "Day08::part2", 
+        "Day09::part2", 
         |b| b.iter(|| part_2(&parsed))
     );
 }
 
 fn all_benchmark(c: &mut Criterion) {
     c.bench_function(
-        "Day08::all", 
+        "Day09::all", 
         |b| b.iter(|| {
             let parsed = parse(include_str!("../src/input.txt"));
             let _ = part_1(&parsed);
