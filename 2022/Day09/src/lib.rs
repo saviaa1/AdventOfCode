@@ -11,7 +11,7 @@ pub struct Point {
     pub y: i32,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug)]
 pub struct ParsePointError;
 
 impl fmt::Display for ParsePointError {
@@ -45,13 +45,11 @@ impl FromStr for Point {
 }
 
 pub fn parse(input: &str) -> ParsedTOut {
-    let a = input
+    input
         .trim()
         .lines()
         .map(|f| (f.parse::<Point>().unwrap(), f.split_once(' ').unwrap().1.parse::<i32>().unwrap()))
-        .collect::<ParsedTOut>();
-    //println!("{:?}", a);
-    a
+        .collect::<ParsedTOut>()
 }
 
 fn solve<const N: usize>(val: &ParsedTIn) -> ReturnT {
